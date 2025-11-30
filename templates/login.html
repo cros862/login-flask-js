@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>login</h2>
+
+    <form action="/autenticar" method="post">
+        <input type="email" name="email"
+        placeholder="email" required>
+        <input type="password" name="senha" placeholder="senha"
+        required>
+        <button type="submit">entrar</button>
+    </form>
+    <p>não tem conta ? <a href="/cadastro">cadaste-se </a></p>
+</div>
+</body>
+</html>
