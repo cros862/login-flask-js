@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>login</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-<div class="container">
-    <h2>login</h2>
+<body id="bulbasaur">
+    <div class="container">
+        <img src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/001.png" class="login-img" alt="Bulbasaur">
+        <h2>Login</h2>
 
-    <form action="/autenticar" method="post">
-        <input type="email" name="email"
-        placeholder="email" required>
-        <input type="password" name="senha" placeholder="senha"
-        required>
-        <button type="submit">entrar</button>
-    </form>
-    <p>não tem conta ? <a href="/cadastro">cadaste-se </a></p>
-</div>
+        {% if erro %}
+            <p class="erro">{{ erro }}</p>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p>Ainda não tem conta? <a href="{{ url_for('register') }}">Criar Conta</a></p>
+    </div>
 </body>
 </html>
