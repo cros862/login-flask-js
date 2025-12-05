@@ -18,6 +18,10 @@
         <div style="margin-top:18px">
             <a class="btn" href="{{ url_for('logout') }}">Sair</a>
             <a class="btn" href="{{ url_for('login') }}">Voltar ao Login</a>
+
+            {% if usuario == 'admin' %}
+                <a class="btn" href="{{ url_for('admin') }}">Área Admin</a>
+            {% endif %}
         </div>
     </div>
 </body>
