@@ -9,7 +9,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "usuarios.db")
 
 
-# ========================= BANCO =========================
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -38,14 +37,12 @@ def get_user(email, senha):
     return user
 
 
-# ========================= ROTAS =========================
 
 @app.route("/")
 def index():
     return redirect(url_for("login"))
 
 
-# ---------- LOGIN ----------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     erro = None
@@ -71,7 +68,6 @@ def login():
     return render_template("login.html", erro=erro)
 
 
-# ---------- CADASTRO ----------
 @app.route("/register", methods=["GET", "POST"])
 def register():
     erro = None
@@ -96,7 +92,6 @@ def register():
     return render_template("register.html", erro=erro)
 
 
-# ---------- HOME ----------
 @app.route("/home")
 def home():
     if "user_id" not in session:
@@ -105,27 +100,22 @@ def home():
     return render_template("home.html", usuario=session["user_name"])
 
 
-# ---------- LOGOUT ----------
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
 
-# ===========================================================
-#                   ÁREA ADMINISTRATIVA
-# ===========================================================
 
-ADMIN_EMAIL = "admin@admin.com"   # <= só ele pode acessar
+
+ADMIN_EMAIL = "admin@admin.com"   # berssa usar esse email para entrar na pagina do banco de dados
 
 
 @app.route("/admin")
 def admin():
-    # VERIFICA se está logado
     if "user_email" not in session:
         return redirect(url_for("login"))
 
-    # VERIFICA se é o administrador
     if session["user_email"] != ADMIN_EMAIL:
         return "<h1>ENTRADA NEGADA ❌</h1> <p>Apenas o administrador pode acessar esta página.</p>"
 
@@ -139,7 +129,6 @@ def admin():
     return render_template("admin.html", usuarios=usuarios)
 
 
-# ATIVAR / INATIVAR
 @app.route("/toggle/<int:user_id>")
 def toggle_user(user_id):
     conn = sqlite3.connect(DB_PATH)
@@ -150,7 +139,6 @@ def toggle_user(user_id):
     return redirect(url_for("admin"))
 
 
-# APAGAR USUÁRIO
 @app.route("/delete/<int:user_id>")
 def delete_user(user_id):
     conn = sqlite3.connect(DB_PATH)
@@ -160,7 +148,36 @@ def delete_user(user_id):
     conn.close()
     return redirect(url_for("admin"))
 
+@app.route("/edit_inline/<int:id>", methods=["POST"])
+def edit_inline(id):
+    nome = request.form["nome"]
+    email = request.form["email"]
+    senha = request.form.get("senha", "")
+    ativo = 1 if "ativo" in request.form else 0
 
-# ========================= RUN =========================
+    con = sqlite3.connect("usuarios.db")
+    cur = con.cursor()
+
+    # Atualização com ou sem senha
+    if senha.strip() != "":
+        cur.execute("""
+            UPDATE usuarios 
+            SET nome=?, email=?, senha=?, ativo=? 
+            WHERE id=?
+        """, (nome, email, senha, ativo, id))
+    else:
+        cur.execute("""
+            UPDATE usuarios 
+            SET nome=?, email=?, ativo=? 
+            WHERE id=?
+        """, (nome, email, ativo, id))
+
+    con.commit()
+    con.close()
+
+    return redirect("/admin")
+
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

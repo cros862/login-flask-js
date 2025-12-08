@@ -4,45 +4,118 @@
     <meta charset="UTF-8">
     <title>Painel Administrativo</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+        /* Tabela responsiva */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 700px;
+            background: white;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Inputs pequenos e bem ajustados */
+        input.edit-field {
+            width: 90%;
+            max-width: 200px;
+            padding: 6px;
+        }
+
+        .small-btn {
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+
+        /* Responsividade total */
+        @media(max-width: 800px) {
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
+
+            input.edit-field {
+                width: 100%;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            .small-btn {
+                font-size: 11px;
+                padding: 5px 6px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <div class="table-wrapper">
-        <h2>Painel Administrativo</h2>
-        <p>Gerenciar usuários do sistema</p>
+<div class="container">
+    <h2>Painel Administrativo</h2>
+    <p>Gerenciar usuários do sistema</p>
 
-        <table border="1" style="width:100%; margin-top:15px; background:white;">
+    <div class="table-container">
+        <table border="1">
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Email</th>
+                <th>Senha</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
 
             {% for u in usuarios %}
             <tr>
-                <td>{{ u[0] }}</td>
-                <td>{{ u[1] }}</td>
-                <td>{{ u[2] }}</td>
-                <td>
-                    {% if u[3] == 1 %}
-                        <b style="color:green">Ativo</b>
-                    {% else %}
-                        <b style="color:red">Inativo</b>
-                    {% endif %}
-                </td>
-                <td>
-                    <a class="btn" href="/toggle/{{ u[0] }}">Ativar/Inativar</a>
-                    <a class="btn" style="background:#c0392b" href="/delete/{{ u[0] }}">Excluir</a>
-                </td>
+                <form method="POST" action="/edit_inline/{{ u[0] }}">
+
+                    <td>{{ u[0] }}</td>
+
+                    <td>
+                        <input class="edit-field" type="text" name="nome" value="{{ u[1] }}">
+                    </td>
+
+                    <td>
+                        <input class="edit-field" type="email" name="email" value="{{ u[2] }}">
+                    </td>
+
+                    <td>
+                        <input class="edit-field" type="password" name="senha" placeholder="Nova senha (opcional)">
+                    </td>
+
+                    <td>
+                        <input type="checkbox" name="ativo" {% if u[3] == 1 %}checked{% endif %}>
+                    </td>
+
+                    <td>
+                        <button class="btn small-btn" type="submit">Salvar</button>
+
+                        {% if u[0] != 1 %}
+                        <a class="btn small-btn" style="background:#c0392b" href="/delete/{{ u[0] }}">Excluir</a>
+                        {% endif %}
+                    </td>
+
+                </form>
             </tr>
             {% endfor %}
         </table>
-
-        <br>
-        <a class="btn" href="/home">Voltar ao Home</a>
     </div>
+
+    <br>
+    <a class="btn" href="/home">Voltar ao Home</a>
+</div>
 
 </body>
 </html>
